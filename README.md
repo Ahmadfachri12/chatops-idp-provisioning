@@ -1,4 +1,6 @@
+## 🏗 Architecture Overview
 
+![ChatOps Provisioning Workflow](workflow-diagram.png)
 
 ---
 
