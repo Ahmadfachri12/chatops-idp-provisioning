@@ -4,20 +4,24 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = ">= 2.0.0"
     }
-
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 3.0.0"
+      version = ">= 2.0.0"
     }
   }
 }
 
+# Provider 1: Kubernetes
 provider "kubernetes" {
-  config_path = "/var/jenkins_home/.kube/config"
+  config_path = "~/.kube/config"
+  insecure    = true  
 }
 
+# Provider 2: Helm
 provider "helm" {
-  kubernetes = {
-    config_path = "/var/jenkins_home/.kube/config"
+  # PERHATIKAN: Konfigurasi harus dibungkus dalam blok "kubernetes"
+  kubernetes { 
+    config_path = "~/.kube/config"
+    insecure    = true 
   }
 }
