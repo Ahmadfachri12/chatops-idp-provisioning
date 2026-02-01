@@ -2,84 +2,66 @@ pipeline {
     agent any
 
     parameters {
-        string(name: 'ENV_NAME', defaultValue: 'deployment', description: 'Nama environment')
-    }
+        string(
+            name: 'ENV_NAME',
+            defaultValue: 'dev',
+            description: 'Nama environment (contoh: dev, staging, prod)'
+        )
 
-    tools {
-        terraform 'terraform-default'
+        choice(
+            name: 'ACTION',
+            choices: ['apply', 'destroy'],
+            description: 'Terraform action'
+        )
     }
 
     stages {
-        stage('Persiapan') {
+
+        stage('Validasi Environment') {
             steps {
-                echo "Memulai provisioning untuk: ${params.ENV_NAME}"
-                writeFile file: 'main.tf', text: """
-terraform {
-  required_providers {
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = ">= 2.0.0"
-    }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "~> 2.16.0"
-    }
-  }
-}
-
-provider "kubernetes" {
-  config_path = "/var/jenkins_home/.kube/config"
-}
-
-provider "helm" {
-  kubernetes {
-    config_path = "/var/jenkins_home/.kube/config"
-  }
-}
-
-variable "env_name" {
-  type = string
-}
-
-resource "kubernetes_namespace" "env_ns" {
-  metadata {
-    name = "env-\${var.env_name}"
-  }
-}
-
-resource "helm_release" "app_deploy" {
-  name       = "\${var.env_name}-nginx"
-  
-  repository = "oci://registry-1.docker.io/bitnamicharts"
-  chart      = "nginx"
-  
-  namespace  = kubernetes_namespace.env_ns.metadata.0.name
-  depends_on = [ kubernetes_namespace.env_ns ]
-  
-  # Agar tidak menunggu lama
-  wait       = false
-
-  set {
-    name  = "service.type"
-    value = "ClusterIP"
-  }
-}
-"""
+                script {
+                    def allowedEnv = ['dev', 'staging', 'prod']
+                    if (!allowedEnv.contains(params.ENV_NAME)) {
+                        error "Environment '${params.ENV_NAME}' tidak valid. Gunakan: dev, staging, atau prod."
+                    }
+                }
             }
         }
 
-        stage('Terraform Provision') {
+        stage('Terraform Init') {
             steps {
-                script {
-                    sh 'rm -rf .terraform .terraform.lock.hcl'
+                dir('terraform') {
                     sh 'terraform init'
-                    sh "terraform apply -auto-approve -var=\"env_name=${params.ENV_NAME}\""
+                }
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                dir('terraform') {
+                    sh "terraform plan -var=\"env_name=${params.ENV_NAME}\""
+                }
+            }
+        }
+
+        stage('Terraform Apply / Destroy') {
+            steps {
+                dir('terraform') {
+                    sh "terraform ${params.ACTION} -auto-approve -var=\"env_name=${params.ENV_NAME}\""
                 }
             }
         }
     }
 
     post {
+        success {
+            echo "✅ Terraform ${params.ACTION} berhasil untuk environment: ${params.ENV_NAME}"
+        }
+
+        failure {
+            echo "❌ Terraform ${params.ACTION} gagal untuk environment: ${params.ENV_NAME}"
+        }
+
         always {
             cleanWs()
         }
