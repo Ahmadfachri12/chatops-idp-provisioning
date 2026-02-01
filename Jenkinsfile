@@ -17,17 +17,6 @@ pipeline {
 
     stages {
 
-        stage('Validasi Environment') {
-            steps {
-                script {
-                    def allowedEnv = ['dev', 'staging', 'prod']
-                    if (!allowedEnv.contains(params.ENV_NAME)) {
-                        error "Environment '${params.ENV_NAME}' tidak valid. Gunakan: dev, staging, atau prod."
-                    }
-                }
-            }
-        }
-
         stage('Terraform Init') {
             steps {
                 dir('terraform') {
