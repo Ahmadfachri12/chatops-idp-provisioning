@@ -17,5 +17,7 @@ provider "kubernetes" {
 }
 
 provider "helm" {
-  config_path = "/var/jenkins_home/.kube/config"
+  kubernetes {
+    config_path = "/var/jenkins_home/.kube/config"
+  }
 }
