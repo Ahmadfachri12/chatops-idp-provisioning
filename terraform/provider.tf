@@ -11,17 +11,14 @@ terraform {
   }
 }
 
-# Provider 1: Kubernetes
 provider "kubernetes" {
-  config_path = "~/.kube/config"
-  insecure    = true  
+  config_path = "/var/jenkins_home/.kube/config"
+  insecure    = true
 }
 
-# Provider 2: Helm
 provider "helm" {
-  # PERHATIKAN: Konfigurasi harus dibungkus dalam blok "kubernetes"
-  kubernetes { 
-    config_path = "~/.kube/config"
-    insecure    = true 
+  kubernetes = {
+    config_path = "/var/jenkins_home/.kube/config"
+    insecure    = true
   }
 }
