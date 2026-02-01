@@ -2,8 +2,8 @@
 # Output: Namespace Name
 #######################################
 output "namespace_name" {
-  description = "Nama Kubernetes namespace yang dibuat"
-  value       = kubernetes_namespace.env_ns.metadata[0].name
+  description = "Nama namespace yang dibuat"
+  value       = kubernetes_namespace_v1.env_ns.metadata[0].name
 }
 
 #######################################
