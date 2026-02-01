@@ -2,6 +2,13 @@
 
 ![ChatOps Provisioning Workflow](workflow-diagram.png)
 
+The system follows this end-to-end automation flow:
+
+**Developer → Slack → n8n → Jenkins → Terraform → Helm → Kubernetes**
+
+A developer simply sends a command in Slack, and the platform handles orchestration, validation, provisioning, and deployment automatically.
+
+
 ---
 
 # ChatOps-Based Kubernetes Environment Provisioning
@@ -9,16 +16,6 @@
 This project implements a **ChatOps-driven Internal Developer Platform (IDP)** that allows developers to dynamically create and delete Kubernetes environments using **Slack commands**.
 
 The entire workflow is fully automated and runs on a **local Kubernetes cluster**, enabling self-service infrastructure provisioning without direct access to Kubernetes, Jenkins, or Terraform.
-
----
-
-## 🚀 Architecture Overview
-
-The system follows this end-to-end automation flow:
-
-**Developer → Slack → n8n → Jenkins → Terraform → Helm → Kubernetes**
-
-A developer simply sends a command in Slack, and the platform handles orchestration, validation, provisioning, and deployment automatically.
 
 ---
 
@@ -45,17 +42,6 @@ Each environment is isolated using Kubernetes namespaces.
 
 ---
 
-## 📦 Project Structure
-
-├── Jenkinsfile
-├── terraform/
-│ ├── main.tf
-│ ├── provider.tf
-│ ├── variables.tf
-│ └── outputs.tf
-└── README.md
-
----
 
 ## 🔄 End-to-End Workflow
 
