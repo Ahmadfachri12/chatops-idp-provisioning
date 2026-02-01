@@ -57,7 +57,7 @@ Each environment is isolated using Kubernetes namespaces.
 
 ## 🧪 Local Environment Requirements
 
-- Kubernetes (Minikube or Kind)
+- Kubernetes
 - Jenkins (with Terraform tool configured)
 - Terraform
 - Helm
